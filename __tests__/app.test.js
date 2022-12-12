@@ -17,7 +17,6 @@ describe("GET /api/categories", () => {
       .expect(200)
       .then(({ body }) => {
         const { categories } = body;
-        expect(categories).toBeInstanceOf(Array);
         expect(categories).toHaveLength(4);
         categories.forEach((category) => {
           expect(category).toEqual(
@@ -31,13 +30,13 @@ describe("GET /api/categories", () => {
   });
 });
 
+
 describe("/api/invalidPath", () => {
     test("404: not found when querying a non-existent path", () => {
       return request(app)
         .get("/api/hajsdfbhjasdbfvja")
         .expect(404)
         .then(({ body }) => {
-            console.log(body)
           const { msg } = body;
           expect(msg).toBe("Not found, invalid path.");
         });

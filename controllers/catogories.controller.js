@@ -1,9 +1,13 @@
-const {selectAllCategories} = require ('../models/catogories.model')
+const {
+  selectAllCategories,
+  selectAllReviews,
+} = require("../models/catogories.model");
 
 exports.getCategories = (req, res, next) => {
-    selectAllCategories()
-    .then((categories) =>{
-        res.send({categories})
+  selectAllCategories()
+    .then((categories) => {
+      res.send({ categories });
     })
-    .catch(next)
+    .catch(next);
 };
+
