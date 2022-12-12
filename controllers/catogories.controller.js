@@ -11,3 +11,10 @@ exports.getCategories = (req, res, next) => {
     .catch(next);
 };
 
+exports.getReviews = (req, res, next) => {
+  selectAllReviews()
+    .then((reviews) => {
+      res.send({ reviews });
+    })
+    .catch(next);
+};
