@@ -3,6 +3,7 @@ const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
 const request = require("supertest");
 const app = require("../app");
+const _ = require("lodash");
 
 afterAll(() => {
   if (db.end) db.end();
@@ -28,6 +29,7 @@ describe("GET /api/categories", () => {
       });
   });
 });
+
 
 describe("GET /api/reviews/:review_id", () => {
   test("200: should return a review object, with correct properties: ", () => {
@@ -63,6 +65,43 @@ describe("GET /api/reviews/:review_id", () => {
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("bad request");
+
+describe("GET /api/reviews", () => {
+  test("200: should return an array of review objects with the correct properties", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(reviews).toHaveLength(13);
+        reviews.forEach((review) => {
+          expect(review).toEqual(
+            expect.objectContaining({
+              owner: expect.any(String),
+              title: expect.any(String),
+              review_id: expect.any(Number),
+              category: expect.any(String),
+              review_img_url: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              designer: expect.any(String),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("200: return reviews sorted by date in descending order, by default", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        const sortedReviews = _.cloneDeep(reviews).sort((a, b) => {
+          return a.created_at - b.created_at;
+        });
+        expect(reviews).toEqual(sortedReviews);
+
       });
   });
 });
@@ -72,7 +111,10 @@ describe("/api/invalidPath", () => {
     return request(app)
       .get("/api/hajsdfbhjasdbfvja")
       .expect(404)
+
       .then(({ body: { msg } }) => {
+
+
         expect(msg).toBe("Not found, invalid path.");
       });
   });
