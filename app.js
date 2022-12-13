@@ -2,11 +2,13 @@ const express = require("express");
 const app = express();
 
 const { handle404, handle500,handleCustom, handle400} = require("./controllers/errors.controller");
-const {getCategories, getReviewObject} = require ('./controllers/catogories.controller')
+const {getCategories, getReviewObject, getReviews} = require ('./controllers/catogories.controller')
 
 
 app.get("/api/categories", getCategories);
+app.get("/api/reviews", getReviews)
 app.get("/api/reviews/:review_id", getReviewObject);
+
 
 app.all("*", handle404);
 

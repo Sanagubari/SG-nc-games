@@ -18,12 +18,14 @@ exports.getReviewObject = (req, res, next) => {
   selectSpecificReview(review_id)
     .then((review) => {
       res.send({ review });
+    })
+    .catch(next)
+  }
 
 exports.getReviews = (req, res, next) => {
   selectAllReviews()
     .then((reviews) => {
       res.send({ reviews });
-
     })
     .catch(next);
 };

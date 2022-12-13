@@ -18,6 +18,7 @@ exports.selectSpecificReview = (reviewID) => {
         return Promise.reject({ status: 404, msg: "not found" });
       }
       return rows[0];
+    })}
 
 exports.selectAllReviews = () => {
   return db
@@ -32,6 +33,5 @@ exports.selectAllReviews = () => {
     )
     .then(({ rows }) => {
       return rows;
-
     });
 };

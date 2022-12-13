@@ -65,6 +65,9 @@ describe("GET /api/reviews/:review_id", () => {
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("bad request");
+      })
+    })
+  })
 
 describe("GET /api/reviews", () => {
   test("200: should return an array of review objects with the correct properties", () => {
@@ -118,4 +121,4 @@ describe("/api/invalidPath", () => {
         expect(msg).toBe("Not found, invalid path.");
       });
   });
-});
+})

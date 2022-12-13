@@ -2,7 +2,6 @@ exports.handle404 = (req, res) => {
   res.status(404).send({ msg: "Not found, invalid path." });
 };
 
-
 exports.handle400 = (error, req, res, next) => {
   if (
     error.code === "23502" ||
