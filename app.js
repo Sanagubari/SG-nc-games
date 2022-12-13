@@ -9,7 +9,7 @@ const {
 app.get("/api/categories", getCategories);
 app.get("/api/reviews", getReviews);
 
-app.all("/api/*", handle404);
+app.all("*", handle404);
 
 // server errors
 app.use(handle500);
