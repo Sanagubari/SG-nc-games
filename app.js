@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const { handle404, handle500,handleCustom} = require("./controllers/errors.controller");
+const { handle404, handle500,handleCustom, handle400} = require("./controllers/errors.controller");
 const {getCategories, getReviewObject} = require ('./controllers/catogories.controller')
 
 
@@ -8,6 +8,9 @@ app.get("/api/categories", getCategories);
 app.get("/api/reviews/:review_id", getReviewObject);
 
 app.all("/api/*", handle404)
+
+// psql errors
+app.use(handle400);
 
 // custom errors
 app.use(handleCustom);

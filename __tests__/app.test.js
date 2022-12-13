@@ -15,7 +15,7 @@ describe("GET /api/categories", () => {
     return request(app)
       .get("/api/categories")
       .expect(200)
-      .then(({ body : {categories} }) => {
+      .then(({ body: { categories } }) => {
         expect(categories).toHaveLength(4);
         categories.forEach((category) => {
           expect(category).toEqual(
@@ -53,8 +53,16 @@ describe("GET /api/reviews/:review_id", () => {
     return request(app)
       .get("/api/reviews/100")
       .expect(404)
-      .then(({ body: {msg}}) => {
+      .then(({ body: { msg } }) => {
         expect(msg).toBe("not found");
+      });
+  });
+  test("400: bad request when wrong data type is queried", () => {
+    return request(app)
+      .get("/api/reviews/banana")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
       });
   });
 });
@@ -64,7 +72,7 @@ describe("/api/invalidPath", () => {
     return request(app)
       .get("/api/hajsdfbhjasdbfvja")
       .expect(404)
-      .then(({ body : {msg}}) => {
+      .then(({ body: { msg } }) => {
         expect(msg).toBe("Not found, invalid path.");
       });
   });

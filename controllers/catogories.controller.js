@@ -13,10 +13,10 @@ exports.getCategories = (req, res, next) => {
 };
 
 exports.getReviewObject = (req, res, next) => {
-  const {review_id} = req.params;
+  const { review_id } = req.params;
   selectSpecificReview(review_id)
     .then((review) => {
-      res.send({review});
+      res.send({ review });
     })
     .catch(next);
 };
