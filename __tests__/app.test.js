@@ -30,7 +30,6 @@ describe("GET /api/categories", () => {
   });
 });
 
-
 describe("GET /api/reviews/:review_id", () => {
   test("200: should return a review object, with correct properties: ", () => {
     return request(app)
@@ -65,9 +64,9 @@ describe("GET /api/reviews/:review_id", () => {
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("bad request");
-      })
-    })
-  })
+      });
+  });
+});
 
 describe("GET /api/reviews", () => {
   test("200: should return an array of review objects with the correct properties", () => {
@@ -104,7 +103,32 @@ describe("GET /api/reviews", () => {
           return a.created_at - b.created_at;
         });
         expect(reviews).toEqual(sortedReviews);
+      });
+  });
+});
 
+describe("POST /api/reviews/:review_id/comments", () => {
+  test("201: should add new comment to review id and return posted comment", () => {
+    const newCommentToAdd = {
+      votes: 1,
+      created_at: new Date(1610964101251),
+      author: "sanaGubari",
+      body: "I loved this game",
+      review_id: 1,
+    };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(newCommentToAdd)
+      .expect(201)
+      .then(({ body: { newComment } }) => {
+        expect(newComment).toEqual({
+          comment_id: 7,
+          votes: 1,
+          created_at: new Date(1610964101251),
+          author: "sanaGubari",
+          body: "I loved this game",
+          review_id: 1,
+        });
       });
   });
 });
@@ -114,11 +138,8 @@ describe("/api/invalidPath", () => {
     return request(app)
       .get("/api/hajsdfbhjasdbfvja")
       .expect(404)
-
       .then(({ body: { msg } }) => {
-
-
         expect(msg).toBe("Not found, invalid path.");
       });
   });
-})
+});

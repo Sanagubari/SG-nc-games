@@ -35,3 +35,12 @@ exports.selectAllReviews = () => {
       return rows;
     });
 };
+
+exports.insertComment = (commentToBeAdded) => {
+  const { votes, created_at, author, body, review_id } = commentToBeAdded;
+
+  return db.query(`INSERT INTO comments (votes, created_at, author, body, review_id) VALUES ($1, $2, $3, $4, $5) RETURNING *`, [votes, created_at, author, body, review_id])
+  .then(({rows}) => {
+    return rows[0];
+  })
+}

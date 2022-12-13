@@ -2,6 +2,7 @@ const {
   selectAllCategories,
   selectAllReviews,
   selectSpecificReview,
+  insertComment
 } = require("../models/catogories.model");
 
 exports.getCategories = (req, res, next) => {
@@ -29,3 +30,12 @@ exports.getReviews = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.postComment = (req, res, next) => {
+  const {body} = req
+  insertComment(body)
+  .then((newComment) => {
+    res.status(201).send({newComment})
+  })
+  .catch(next)
+}
