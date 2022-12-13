@@ -143,7 +143,25 @@ describe("GET /api/reviews/:review_id/comments", () => {
         expect(comments).toHaveLength(0);
       });
   });
-})
+
+  test("404: should return not found if review id does not exist", () => {
+    return request(app)
+      .get("/api/reviews/100/comments")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+  test('400: bad request when wrong data type inputed in the params ', () => {
+    return request(app)
+    .get("/api/reviews/hello/comments")
+    .expect(400)
+    .then(({body : {msg}}) => {
+      expect(msg).toBe("bad request");
+    })
+   
+  });
+ });
 
 describe("/api/invalidPath", () => {
   test("404: not found when querying a non-existent path", () => {

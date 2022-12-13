@@ -33,9 +33,10 @@ exports.getReviews = (req, res, next) => {
 
 exports.getComments = (req, res, next) => {
   const {review_id} = req.params
-  selectComments(review_id)
-  .then((comments) => {
+  Promise.all([selectComments(review_id), selectSpecificReview(review_id) ])
+  .then(([comments]) => {
     res.send({comments})
   })
   .catch(next)
-};
+}
+ 

@@ -36,7 +36,6 @@ exports.handle404 = (req, res) => {
 };
 
 exports.handle400 = (error, req, res, next) => {
-  console.log(error.code, "<< error.code");
   if (
     error.code === "23502" ||
     error.code === "22P02" ||

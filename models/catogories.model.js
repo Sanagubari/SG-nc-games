@@ -21,6 +21,8 @@ exports.selectSpecificReview = (reviewID) => {
     })}
 
 exports.selectAllReviews = () => {
+  // if (!reviewID) return Promise.resolve(true);
+  // else
   return db
     .query(
       `SELECT  title, designer, owner, review_img_url, category, reviews.votes, reviews.review_id, reviews.created_at,
@@ -37,6 +39,7 @@ exports.selectAllReviews = () => {
 };
 
 exports.selectComments = (reviewID) => {
+  
     return db
       .query(
         `SELECT  comment_id, comments.votes, comments.created_at, author, body, comments.review_id
