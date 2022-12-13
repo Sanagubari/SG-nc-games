@@ -1,6 +1,7 @@
 const {
   selectAllCategories,
   selectAllReviews,
+  selectComments,
   selectSpecificReview,
   insertComment
 } = require("../models/catogories.model");
@@ -39,3 +40,12 @@ exports.postComment = (req, res, next) => {
   })
   .catch(next)
 }
+exports.getComments = (req, res, next) => {
+  const {review_id} = req.params
+  Promise.all([selectComments(review_id), selectSpecificReview(review_id) ])
+  .then(([comments]) => {
+    res.send({comments})
+  })
+  .catch(next)
+}
+ 

@@ -9,7 +9,6 @@ exports.selectAllCategories = () => {
     });
 };
 
-
 exports.selectSpecificReview = (reviewID) => {
   return db
     .query(`SELECT * FROM reviews WHERE review_id = $1`, [reviewID])
@@ -18,7 +17,8 @@ exports.selectSpecificReview = (reviewID) => {
         return Promise.reject({ status: 404, msg: "not found" });
       }
       return rows[0];
-    })}
+    });
+};
 
 exports.selectAllReviews = () => {
   return db
@@ -39,8 +39,27 @@ exports.selectAllReviews = () => {
 exports.insertComment = (commentToBeAdded) => {
   const { votes, created_at, author, body, review_id } = commentToBeAdded;
 
-  return db.query(`INSERT INTO comments (votes, created_at, author, body, review_id) VALUES ($1, $2, $3, $4, $5) RETURNING *`, [votes, created_at, author, body, review_id])
-  .then(({rows}) => {
-    return rows[0];
-  })
-}
+  return db
+    .query(
+      `INSERT INTO comments (votes, created_at, author, body, review_id) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [votes, created_at, author, body, review_id]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
+exports.selectComments = (reviewID) => {
+  return db
+    .query(
+      `SELECT  comment_id, comments.votes, comments.created_at, author, body, comments.review_id
+    FROM comments
+    LEFT JOIN reviews
+    ON comments.review_id = reviews.review_id
+    WHERE comments.review_id = $1
+    ORDER BY comments.created_at DESC;`,
+      [reviewID]
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
+};

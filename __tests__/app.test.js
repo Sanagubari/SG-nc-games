@@ -97,11 +97,9 @@ describe("GET /api/reviews", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
-      .then(({ body }) => {
-        const { reviews } = body;
-        const sortedReviews = _.cloneDeep(reviews).sort((a, b) => {
-          return a.created_at - b.created_at;
-        });
+
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("created_at", { descending: true });
         expect(reviews).toEqual(sortedReviews);
       });
   });
@@ -133,13 +131,71 @@ describe("POST /api/reviews/:review_id/comments", () => {
   });
 });
 
+describe("GET /api/reviews/:review_id/comments", () => {
+  test("200: should return an array of comments for the given review_id, with the correct properties", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toHaveLength(3);
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              review_id: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("200:return comments sorted by date in descending order, by default", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+
+  test("200: should return an empty array if review id exists but has no comments ", () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toHaveLength(0);
+      });
+  });
+
+  test("404: should return not found if review id does not exist", () => {
+    return request(app)
+      .get("/api/reviews/100/comments")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+  test("400: bad request when wrong data type inputed in the params ", () => {
+    return request(app)
+      .get("/api/reviews/hello/comments")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+});
+
 describe("/api/invalidPath", () => {
   test("404: not found when querying a non-existent path", () => {
     return request(app)
       .get("/api/hajsdfbhjasdbfvja")
       .expect(404)
-      .then(({ body: { msg } }) => {
-        expect(msg).toBe("Not found, invalid path.");
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("not found");
       });
   });
 });
