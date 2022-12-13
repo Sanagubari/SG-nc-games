@@ -39,7 +39,6 @@ exports.handle400 = (error, req, res, next) => {
   if (
     error.code === "23502" ||
     error.code === "22P02" ||
-    error.code === "23503" ||
     error.code === "42703"
   ) {
     res.status(400).send({ msg: "bad request" });
