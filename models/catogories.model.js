@@ -9,17 +9,6 @@ exports.selectAllCategories = () => {
     });
 };
 
-exports.selectSpecificReview = (reviewID) => {
-  return db
-    .query(`SELECT * FROM reviews WHERE review_id = $1`, [reviewID])
-    .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "not found" });
-      }
-      return rows[0];
-    });
-};
-
 exports.selectAllReviews = () => {
   return db
     .query(
@@ -36,15 +25,13 @@ exports.selectAllReviews = () => {
     });
 };
 
-exports.insertComment = (commentToBeAdded, reviewID) => {
-  const { username, body } = commentToBeAdded;
-
+exports.selectSpecificReview = (reviewID) => {
   return db
-    .query(
-      `INSERT INTO comments (author, body, review_id) VALUES ($1, $2, $3) RETURNING *`,
-      [username, body, reviewID]
-    )
+    .query(`SELECT * FROM reviews WHERE review_id = $1`, [reviewID])
     .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "not found" });
+      }
       return rows[0];
     });
 };
@@ -62,5 +49,18 @@ exports.selectComments = (reviewID) => {
     )
     .then(({ rows }) => {
       return rows;
+    });
+};
+
+exports.insertComment = (commentToBeAdded, reviewID) => {
+  const { username, body } = commentToBeAdded;
+
+  return db
+    .query(
+      `INSERT INTO comments (author, body, review_id) VALUES ($1, $2, $3) RETURNING *`,
+      [username, body, reviewID]
+    )
+    .then(({ rows }) => {
+      return rows[0];
     });
 };

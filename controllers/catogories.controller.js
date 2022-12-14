@@ -1,8 +1,8 @@
 const {
   selectAllCategories,
   selectAllReviews,
-  selectComments,
   selectSpecificReview,
+  selectComments,
   insertComment,
 } = require("../models/catogories.model");
 
@@ -10,6 +10,14 @@ exports.getCategories = (req, res, next) => {
   selectAllCategories()
     .then((categories) => {
       res.send({ categories });
+    })
+    .catch(next);
+};
+
+exports.getReviews = (req, res, next) => {
+  selectAllReviews()
+    .then((reviews) => {
+      res.send({ reviews });
     })
     .catch(next);
 };
@@ -23,10 +31,11 @@ exports.getReviewObject = (req, res, next) => {
     .catch(next);
 };
 
-exports.getReviews = (req, res, next) => {
-  selectAllReviews()
-    .then((reviews) => {
-      res.send({ reviews });
+exports.getComments = (req, res, next) => {
+  const { review_id } = req.params;
+  Promise.all([selectComments(review_id), selectSpecificReview(review_id)])
+    .then(([comments]) => {
+      res.send({ comments });
     })
     .catch(next);
 };
@@ -37,15 +46,6 @@ exports.postComment = (req, res, next) => {
   insertComment(body, review_id)
     .then((newComment) => {
       res.status(201).send({ newComment });
-    })
-    .catch(next);
-};
-
-exports.getComments = (req, res, next) => {
-  const { review_id } = req.params;
-  Promise.all([selectComments(review_id), selectSpecificReview(review_id)])
-    .then(([comments]) => {
-      res.send({ comments });
     })
     .catch(next);
 };
