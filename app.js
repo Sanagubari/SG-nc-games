@@ -13,6 +13,7 @@ const {
   getReviewObject,
   getComments,
   postComment,
+  getUsers
 } = require("./controllers/catogories.controller");
 
 app.use(express.json());
@@ -24,6 +25,7 @@ app.get("/api/reviews/:review_id/comments", getComments);
 
 app.post("/api/reviews/:review_id/comments", postComment);
 
+app.get("/api/users", getUsers);
 app.all("*", handle404);
 
 // psql errors
