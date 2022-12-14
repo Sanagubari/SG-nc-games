@@ -9,20 +9,55 @@ exports.selectAllCategories = () => {
     });
 };
 
-exports.selectAllReviews = () => {
-  return db
-    .query(
-      `SELECT  title, designer, owner, review_img_url, category, reviews.votes, reviews.review_id, reviews.created_at,
-    COUNT(comment_id)::int AS comment_count
-    FROM reviews
-    LEFT JOIN comments
-    ON reviews.review_id = comments.review_id
-    GROUP BY reviews.review_id
-    ORDER BY reviews.created_at DESC;`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+exports.selectAllReviews = (query) => {
+  const { category, sort_by, order } = query;
+
+  const sort = sort_by || "created_at";
+  const sortOrder = order || "DESC";
+  let queryValues = [];
+
+  const validSortQueries = [
+    "owner",
+    "title",
+    "review_id",
+    "category",
+    "created_at",
+    "votes",
+    "designer",
+    "review_img_url",
+  ];
+  const validOrderQueries = ["asc", "desc"];
+
+  if (!validSortQueries.includes(sort)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+
+  if (!validOrderQueries.includes(sortOrder.toLowerCase())) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+
+  let queryString = `SELECT  title, designer, owner, review_img_url, category, reviews.votes, reviews.review_id, reviews.created_at,
+  COUNT(comment_id)::int AS comment_count
+  FROM reviews
+  LEFT JOIN comments
+  ON reviews.review_id = comments.review_id
+  `;
+
+  if (category !== undefined) {
+    queryString += `WHERE category = $1 `;
+    queryValues.push(category);
+  }
+
+  queryString += `
+  GROUP BY reviews.review_id
+  ORDER BY reviews.${sort} ${sortOrder}`;
+
+  return db.query(queryString, queryValues).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "not found" });
+    }
+    return rows;
+  });
 };
 
 exports.selectSpecificReview = (reviewID) => {

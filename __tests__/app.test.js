@@ -67,12 +67,87 @@ describe("GET /api/reviews", () => {
         });
       });
   });
-  test("200: return reviews sorted by date in descending order, by default", () => {
+  test("200: return a list of all reviews sorted by date in descending by default", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
       .then(({ body: { reviews } }) => {
         expect(reviews).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("200: allows client to filter by category and returns a list of all reviews in that category, sorted by date in descending by default", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toHaveLength(11);
+        reviews.forEach((review) => {
+          expect(review).toEqual(
+            expect.objectContaining({
+              owner: expect.any(String),
+              title: expect.any(String),
+              review_id: expect.any(Number),
+              category: "social deduction",
+              review_img_url: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              designer: expect.any(String),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("200: allows client to filter by category and sort by a specific column and order, and returns a list of all reviews in that category, sorted by the column and order specified", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction&sort_by=title&order=desc")
+      .expect(200)
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("title", { descending: true });
+      });
+  });
+  test("200: allows client to sort reviews by any column and returns a list of all reviews sorted by that column", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=title")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("title", { descending: true });
+      });
+  });
+  test("200: allows client to sort reviews by any column and choose the order and returns a list of all reviews sorted by that column in the specific order", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("title");
+      });
+  });
+  test("400: bad request when invalid query term for sort", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=banana")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("400: bad request when invalid query term for order", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=title&order=desc;DROPTABLES")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("400: bad request when invalid query term for category", () => {
+    return request(app)
+      .get("/api/reviews?category=banana")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("not found");
       });
   });
 });

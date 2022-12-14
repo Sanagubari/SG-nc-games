@@ -15,7 +15,8 @@ exports.getCategories = (req, res, next) => {
 };
 
 exports.getReviews = (req, res, next) => {
-  selectAllReviews()
+  const {query} = req
+  selectAllReviews(query)
     .then((reviews) => {
       res.send({ reviews });
     })
