@@ -9,7 +9,6 @@ exports.selectAllCategories = () => {
     });
 };
 
-
 exports.selectSpecificReview = (reviewID) => {
   return db
     .query(`SELECT * FROM reviews WHERE review_id = $1`, [reviewID])
@@ -18,11 +17,10 @@ exports.selectSpecificReview = (reviewID) => {
         return Promise.reject({ status: 404, msg: "not found" });
       }
       return rows[0];
-    })}
+    });
+};
 
 exports.selectAllReviews = () => {
-  // if (!reviewID) return Promise.resolve(true);
-  // else
   return db
     .query(
       `SELECT  title, designer, owner, review_img_url, category, reviews.votes, reviews.review_id, reviews.created_at,
@@ -38,20 +36,31 @@ exports.selectAllReviews = () => {
     });
 };
 
+exports.insertComment = (commentToBeAdded, reviewID) => {
+  const { username, body } = commentToBeAdded;
+
+  return db
+    .query(
+      `INSERT INTO comments (author, body, review_id) VALUES ($1, $2, $3) RETURNING *`,
+      [username, body, reviewID]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
+
 exports.selectComments = (reviewID) => {
-  
-    return db
-      .query(
-        `SELECT  comment_id, comments.votes, comments.created_at, author, body, comments.review_id
+  return db
+    .query(
+      `SELECT  comment_id, comments.votes, comments.created_at, author, body, comments.review_id
     FROM comments
     LEFT JOIN reviews
     ON comments.review_id = reviews.review_id
     WHERE comments.review_id = $1
     ORDER BY comments.created_at DESC;`,
-        [reviewID]
-      )
-      .then(({ rows }) => {
-      
-        return rows
-      });
+      [reviewID]
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
 };

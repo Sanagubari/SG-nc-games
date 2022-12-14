@@ -30,7 +30,6 @@ describe("GET /api/categories", () => {
   });
 });
 
-
 describe("GET /api/reviews/:review_id", () => {
   test("200: should return a review object, with correct properties: ", () => {
     return request(app)
@@ -65,9 +64,9 @@ describe("GET /api/reviews/:review_id", () => {
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("bad request");
-      })
-    })
-  })
+      });
+  });
+});
 
 describe("GET /api/reviews", () => {
   test("200: should return an array of review objects with the correct properties", () => {
@@ -104,6 +103,79 @@ describe("GET /api/reviews", () => {
   });
 });
 
+describe("POST /api/reviews/:review_id/comments", () => {
+  test("201: should add new comment to review id and return posted comment", () => {
+    const newCommentToAdd = {
+      username: "mallionaire",
+      body: "I loved this game",
+    };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(newCommentToAdd)
+      .expect(201)
+      .then(({ body: { newComment } }) => {
+        expect(newComment).toEqual({
+          comment_id: 7,
+          votes: 0,
+          created_at: expect.any(String),
+          author: "mallionaire",
+          body: "I loved this game",
+          review_id: 1,
+        });
+      });
+  });
+  test("404: not found, when author is non existent", () => {
+    const newCommentToAdd = {
+      username: "sanaGubari",
+      body: "I loved this game",
+    };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(newCommentToAdd)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+  test("400: bad request, when not all required properties posted", () => {
+    const newCommentToAdd = {
+      body: "I loved this game",
+    };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(newCommentToAdd)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("404: not found when review_id does not exist", () => {
+    const newCommentToAdd = {
+      username: "mallionaire",
+      body: "I loved this game",
+    };
+    return request(app)
+      .post("/api/reviews/100/comments")
+      .send(newCommentToAdd)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+  test("400: bad request when wrong data type inputed in the params ", () => {
+    const newCommentToAdd = {
+      username: "mallionaire",
+      body: "I loved this game",
+    };
+    return request(app)
+      .post("/api/reviews/hello/comments")
+      .send(newCommentToAdd)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+});
 
 describe("GET /api/reviews/:review_id/comments", () => {
   test("200: should return an array of comments for the given review_id, with the correct properties", () => {
@@ -152,16 +224,15 @@ describe("GET /api/reviews/:review_id/comments", () => {
         expect(msg).toBe("not found");
       });
   });
-  test('400: bad request when wrong data type inputed in the params ', () => {
+  test("400: bad request when wrong data type inputed in the params ", () => {
     return request(app)
-    .get("/api/reviews/hello/comments")
-    .expect(400)
-    .then(({body : {msg}}) => {
-      expect(msg).toBe("bad request");
-    })
-   
+      .get("/api/reviews/hello/comments")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
   });
- });
+});
 
 describe("/api/invalidPath", () => {
   test("404: not found when querying a non-existent path", () => {
@@ -173,4 +244,4 @@ describe("/api/invalidPath", () => {
         expect(msg).toBe("not found");
       });
   });
-})
+});
