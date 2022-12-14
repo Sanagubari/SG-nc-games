@@ -36,18 +36,19 @@ exports.selectAllReviews = () => {
     });
 };
 
-exports.insertComment = (commentToBeAdded) => {
-  const { votes, created_at, author, body, review_id } = commentToBeAdded;
+exports.insertComment = (commentToBeAdded, reviewID) => {
+  const { username, body } = commentToBeAdded;
 
   return db
     .query(
-      `INSERT INTO comments (votes, created_at, author, body, review_id) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [votes, created_at, author, body, review_id]
+      `INSERT INTO comments (author, body, review_id) VALUES ($1, $2, $3) RETURNING *`,
+      [username, body, reviewID]
     )
     .then(({ rows }) => {
       return rows[0];
     });
 };
+
 exports.selectComments = (reviewID) => {
   return db
     .query(
