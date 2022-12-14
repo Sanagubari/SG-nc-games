@@ -4,6 +4,7 @@ const {
   selectSpecificReview,
   selectComments,
   insertComment,
+  removeComment,
 } = require("../models/catogories.model");
 
 exports.getCategories = (req, res, next) => {
@@ -46,6 +47,15 @@ exports.postComment = (req, res, next) => {
   insertComment(body, review_id)
     .then((newComment) => {
       res.status(201).send({ newComment });
+    })
+    .catch(next);
+};
+
+exports.deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  removeComment(comment_id)
+    .then(() => {
+      res.status(204).send("no content");
     })
     .catch(next);
 };
