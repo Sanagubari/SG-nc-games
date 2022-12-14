@@ -13,6 +13,7 @@ const {
   getReviewObject,
   getComments,
   postComment,
+  patchReviewVotes,
 } = require("./controllers/catogories.controller");
 
 app.use(express.json());
@@ -23,6 +24,8 @@ app.get("/api/reviews/:review_id", getReviewObject);
 app.get("/api/reviews/:review_id/comments", getComments);
 
 app.post("/api/reviews/:review_id/comments", postComment);
+
+app.patch("/api/reviews/:review_id", patchReviewVotes);
 
 app.all("*", handle404);
 
