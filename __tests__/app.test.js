@@ -98,6 +98,16 @@ describe("GET /api/reviews", () => {
         });
       });
   });
+
+  test("200: 200: should return an empty array if category exists but has no reviews ", () => {
+    return request(app)
+      .get("/api/reviews?category=children's games")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toHaveLength(0);
+      });
+  });
+
   test("200: allows client to filter by category and sort by a specific column and order, and returns a list of all reviews in that category, sorted by the column and order specified", () => {
     return request(app)
       .get("/api/reviews?category=social deduction&sort_by=title&order=desc")
@@ -123,6 +133,7 @@ describe("GET /api/reviews", () => {
         expect(reviews).toBeSortedBy("title");
       });
   });
+
   test("400: bad request when invalid query term for sort", () => {
     return request(app)
       .get("/api/reviews?sort_by=banana")
@@ -144,10 +155,10 @@ describe("GET /api/reviews", () => {
   test("400: bad request when invalid query term for category", () => {
     return request(app)
       .get("/api/reviews?category=banana")
-      .expect(404)
+      .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("not found");
+        expect(msg).toBe("bad request");
       });
   });
 });

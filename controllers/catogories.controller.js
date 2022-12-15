@@ -16,8 +16,8 @@ exports.getCategories = (req, res, next) => {
 
 exports.getReviews = (req, res, next) => {
   const {query} = req
-  selectAllReviews(query)
-    .then((reviews) => {
+  Promise.all([  selectAllReviews(query), selectAllCategories()])
+    .then(([reviews]) => {
       res.send({ reviews });
     })
     .catch(next);

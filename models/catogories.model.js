@@ -27,7 +27,16 @@ exports.selectAllReviews = (query) => {
     "review_img_url",
   ];
   const validOrderQueries = ["asc", "desc"];
+  const validCategoryQueries = [
+    "euro game",
+    "social deduction",
+    "dexterity",
+    "children's games",
+  ];
 
+  // if (!validCategoryQueries.includes(category)) {
+  //   return Promise.reject({ status: 400, msg: "bad request" });
+  // }
   if (!validSortQueries.includes(sort)) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
@@ -43,9 +52,14 @@ exports.selectAllReviews = (query) => {
   ON reviews.review_id = comments.review_id
   `;
 
-  if (category !== undefined) {
+  if (category !== undefined && validCategoryQueries.includes(category)) {
     queryString += `WHERE category = $1 `;
     queryValues.push(category);
+  } else if (
+    category !== undefined &&
+    !validCategoryQueries.includes(category)
+  ) {
+    return Promise.reject({ status: 400, msg: "bad request" });
   }
 
   queryString += `
@@ -53,9 +67,6 @@ exports.selectAllReviews = (query) => {
   ORDER BY reviews.${sort} ${sortOrder}`;
 
   return db.query(queryString, queryValues).then(({ rows }) => {
-    if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "not found" });
-    }
     return rows;
   });
 };
