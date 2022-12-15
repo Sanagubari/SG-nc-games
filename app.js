@@ -13,7 +13,11 @@ const {
   getReviewObject,
   getComments,
   postComment,
+
   getUsers
+
+  patchReviewVotes,
+
 } = require("./controllers/catogories.controller");
 
 app.use(express.json());
@@ -25,7 +29,12 @@ app.get("/api/reviews/:review_id/comments", getComments);
 
 app.post("/api/reviews/:review_id/comments", postComment);
 
+
 app.get("/api/users", getUsers);
+
+app.patch("/api/reviews/:review_id", patchReviewVotes);
+
+
 app.all("*", handle404);
 
 // psql errors

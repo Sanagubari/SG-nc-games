@@ -65,9 +65,23 @@ exports.insertComment = (commentToBeAdded, reviewID) => {
     });
 };
 
+
 exports.selectAllUsers = () => {
   return db.query(`SELECT * FROM users`)
   .then(({rows}) => {
     return rows;
   })
 }
+
+exports.updateReviewVotes = (reviewID, newVote) => {
+  const { inc_votes } = newVote;
+  return db
+    .query(
+      `UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING *`,
+      [inc_votes, reviewID]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
+
