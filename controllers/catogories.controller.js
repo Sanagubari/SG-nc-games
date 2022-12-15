@@ -4,7 +4,10 @@ const {
   selectSpecificReview,
   selectComments,
   insertComment,
+
+
   updateReviewVotes,
+
 } = require("../models/catogories.model");
 
 exports.getCategories = (req, res, next) => {
@@ -51,6 +54,15 @@ exports.postComment = (req, res, next) => {
     .catch(next);
 };
 
+
+exports.getUsers = (req, res, next) => {
+  selectAllUsers()
+  .then((users) => {
+    res.send({users})
+  })
+  .catch(next);
+}
+
 exports.patchReviewVotes = (req, res, next) => {
   const { review_id } = req.params;
   const { body } = req;
@@ -63,3 +75,4 @@ exports.patchReviewVotes = (req, res, next) => {
     })
     .catch(next);
 };
+

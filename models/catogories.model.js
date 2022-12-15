@@ -65,6 +65,14 @@ exports.insertComment = (commentToBeAdded, reviewID) => {
     });
 };
 
+
+exports.selectAllUsers = () => {
+  return db.query(`SELECT * FROM users`)
+  .then(({rows}) => {
+    return rows;
+  })
+}
+
 exports.updateReviewVotes = (reviewID, newVote) => {
   const { inc_votes } = newVote;
   return db
@@ -76,3 +84,4 @@ exports.updateReviewVotes = (reviewID, newVote) => {
       return rows[0];
     });
 };
+
