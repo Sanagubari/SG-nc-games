@@ -9,7 +9,7 @@
     "test": "jest",
     "prepare": "husky install",
     "start": "node listen.js",
-		"seed-prod": "NODE_ENV=production npm run seed"
+    "seed-prod": "NODE_ENV=production npm run seed"
   },
   "repository": {
     "type": "git",
@@ -29,14 +29,16 @@
     "pg-format": "^1.0.4"
   },
   "devDependencies": {
-    "husky": "^7.0.0",
+    "husky": "^7.0.4",
     "jest": "^27.5.1",
     "jest-extended": "^2.0.0",
     "jest-sorted": "^1.0.14",
     "supertest": "^6.3.3"
   },
   "jest": {
-    "setupFilesAfterEnv": 
-      ["jest-sorted", "jest-extended/all"]
+    "setupFilesAfterEnv": [
+      "jest-sorted",
+      "jest-extended/all"
+    ]
   }
 }
