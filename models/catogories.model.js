@@ -67,7 +67,13 @@ exports.selectAllReviews = (query, categories) => {
 
 exports.selectSpecificReview = (reviewID) => {
   return db
-    .query(`SELECT * FROM reviews WHERE review_id = $1`, [reviewID])
+    .query(`SELECT  title, designer, owner, review_img_url, category, review_body, reviews.votes, reviews.review_id, reviews.created_at, 
+    COUNT(comment_id)::int AS comment_count
+    FROM reviews
+    LEFT JOIN comments
+    ON reviews.review_id = comments.review_id
+    WHERE reviews.review_id = $1
+    GROUP BY reviews.review_id`, [reviewID])
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "not found" });
