@@ -9,7 +9,7 @@ exports.selectAllCategories = () => {
     });
 };
 
-exports.selectAllReviews = (query) => {
+exports.selectAllReviews = (query, categories) => {
   const { category, sort_by, order } = query;
 
   const sort = sort_by || "created_at";
@@ -27,16 +27,10 @@ exports.selectAllReviews = (query) => {
     "review_img_url",
   ];
   const validOrderQueries = ["asc", "desc"];
-  const validCategoryQueries = [
-    "euro game",
-    "social deduction",
-    "dexterity",
-    "children's games",
-  ];
+  const validCategoryQueries = categories.map((category) => {
+    return category.slug;
+  });
 
-  // if (!validCategoryQueries.includes(category)) {
-  //   return Promise.reject({ status: 400, msg: "bad request" });
-  // }
   if (!validSortQueries.includes(sort)) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
