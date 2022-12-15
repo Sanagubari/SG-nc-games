@@ -245,3 +245,15 @@ describe("POST /api/reviews/:review_id/comments", () => {
       });
   });
 });
+
+describe('GET/api', () => {
+  test('200: should return a JSON describing all the available endpoints on the api', () => {
+    return request(app)
+    .get('/api')
+    .expect(200)
+    .then(({body})=> {
+      expect(body).toBe({})
+    })
+    
+  });
+});
