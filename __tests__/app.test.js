@@ -246,6 +246,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
   });
 });
 
+
 describe("PATCH /api/reviews/:review_id", () => {
   test("200: should increment selected review's votes by the given number and return the updated review", () => {
     const newVote = { inc_votes: 1 };
@@ -341,3 +342,16 @@ describe("PATCH /api/reviews/:review_id", () => {
       });
   });
 });
+
+describe('GET/api', () => {
+  test('200: should return a JSON describing all the available endpoints on the api', () => {
+    return request(app)
+    .get('/api')
+    .expect(200)
+    .then(({body})=> {
+      expect(body).toBe({})
+    })
+    
+  });
+});
+
