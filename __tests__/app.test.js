@@ -246,6 +246,103 @@ describe("POST /api/reviews/:review_id/comments", () => {
   });
 });
 
+
+describe("PATCH /api/reviews/:review_id", () => {
+  test("200: should increment selected review's votes by the given number and return the updated review", () => {
+    const newVote = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(newVote)
+      .expect(200)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual({
+          review_id: 1,
+          title: "Agricola",
+          review_body: "Farmyard fun!",
+          designer: "Uwe Rosenberg",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          votes: 2,
+          category: "euro game",
+          owner: "mallionaire",
+          created_at: "2021-01-18T10:00:20.514Z",
+        });
+      });
+  });
+  test("200: should decrement selected review's votes by the given number and return the updated review", () => {
+    const newVote = { inc_votes: -1 };
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(newVote)
+      .expect(200)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual({
+          review_id: 1,
+          title: "Agricola",
+          review_body: "Farmyard fun!",
+          designer: "Uwe Rosenberg",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          votes: 0,
+          category: "euro game",
+          owner: "mallionaire",
+          created_at: "2021-01-18T10:00:20.514Z",
+        });
+      });
+  });
+  test("200: selected review's votes should stay the same if no new votes added ", () => {
+    const newVote = { inc_votes: 0 };
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(newVote)
+      .expect(200)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual({
+          review_id: 1,
+          title: "Agricola",
+          review_body: "Farmyard fun!",
+          designer: "Uwe Rosenberg",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          votes: 1,
+          category: "euro game",
+          owner: "mallionaire",
+          created_at: "2021-01-18T10:00:20.514Z",
+        });
+      });
+  });
+  test("400: bad request, when incorrect property posted", () => {
+    const newVote = { votes: 1 };
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(newVote)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("404: not found when review_id does not exist", () => {
+    const newVote = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/reviews/1000")
+      .send(newVote)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+  test("400: bad request when wrong data type inputed in the params ", () => {
+    const newVote = { inc_votes: "banana" };
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(newVote)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+});
+
 describe('GET/api', () => {
   test('200: should return a JSON describing all the available endpoints on the api', () => {
     return request(app)
@@ -257,3 +354,4 @@ describe('GET/api', () => {
     
   });
 });
+

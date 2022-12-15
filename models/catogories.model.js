@@ -64,3 +64,15 @@ exports.insertComment = (commentToBeAdded, reviewID) => {
       return rows[0];
     });
 };
+
+exports.updateReviewVotes = (reviewID, newVote) => {
+  const { inc_votes } = newVote;
+  return db
+    .query(
+      `UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING *`,
+      [inc_votes, reviewID]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};

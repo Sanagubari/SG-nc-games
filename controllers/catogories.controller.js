@@ -4,6 +4,7 @@ const {
   selectSpecificReview,
   selectComments,
   insertComment,
+  updateReviewVotes,
 } = require("../models/catogories.model");
 
 exports.getCategories = (req, res, next) => {
@@ -46,6 +47,19 @@ exports.postComment = (req, res, next) => {
   insertComment(body, review_id)
     .then((newComment) => {
       res.status(201).send({ newComment });
+    })
+    .catch(next);
+};
+
+exports.patchReviewVotes = (req, res, next) => {
+  const { review_id } = req.params;
+  const { body } = req;
+  Promise.all([
+    updateReviewVotes(review_id, body),
+    selectSpecificReview(review_id),
+  ])
+    .then(([review]) => {
+      res.send({ review });
     })
     .catch(next);
 };
