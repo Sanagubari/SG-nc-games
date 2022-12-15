@@ -2,6 +2,7 @@ const reviews = require("../db/data/test-data/reviews");
 const {
   selectAllCategories,
   selectAllReviews,
+  selectAllUsers,
   selectSpecificReview,
   selectComments,
   insertComment,

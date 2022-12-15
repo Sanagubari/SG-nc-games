@@ -14,11 +14,9 @@ const {
   getComments,
   postComment,
 
-  deleteComment
+  deleteComment,
 
-
-  getUsers
-
+  getUsers,
   patchReviewVotes,
 
 

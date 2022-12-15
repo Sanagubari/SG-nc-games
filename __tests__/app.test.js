@@ -356,7 +356,6 @@ describe("POST /api/reviews/:review_id/comments", () => {
   });
 });
 
-
 describe("DELETE /api/comments/:comment_id", () => {
   test("204: no content when comment has been deleted", () => {
     return request(app)
@@ -369,7 +368,20 @@ describe("DELETE /api/comments/:comment_id", () => {
   test("404: not found when id not present in table", () => {
     return request(app)
       .delete("/api/comments/100")
-
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+  test("400: bad request when wrong data type is inputted for comment_id ", () => {
+    return request(app)
+      .delete("/api/comments/banana")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+});
 
 describe("GET /api/users", () => {
   test("200: should return an array of user objects with the correct properties", () => {
@@ -390,7 +402,6 @@ describe("GET /api/users", () => {
       });
   });
 });
-
 
 describe("PATCH /api/reviews/:review_id", () => {
   test("200: should increment selected review's votes by the given number and return the updated review", () => {
@@ -478,10 +489,6 @@ describe("PATCH /api/reviews/:review_id", () => {
       });
   });
 
-  test("400: bad request when wrong data type is inputted for comment_id ", () => {
-    return request(app)
-      .delete("/api/comments/banana")
-
   test("400: bad request when wrong data type inputed in the params ", () => {
     const newVote = { inc_votes: "banana" };
     return request(app)
@@ -494,19 +501,5 @@ describe("PATCH /api/reviews/:review_id", () => {
       });
   });
 });
-
-
-describe('GET/api', () => {
-  test('200: should return a JSON describing all the available endpoints on the api', () => {
-    return request(app)
-    .get('/api')
-    .expect(200)
-    .then(({body})=> {
-      expect(body).toBe({})
-    })
-    
-  });
-});
-
 
 
