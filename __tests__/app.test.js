@@ -67,12 +67,98 @@ describe("GET /api/reviews", () => {
         });
       });
   });
-  test("200: return reviews sorted by date in descending order, by default", () => {
+  test("200: return a list of all reviews sorted by date in descending by default", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
       .then(({ body: { reviews } }) => {
         expect(reviews).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("200: allows client to filter by category and returns a list of all reviews in that category, sorted by date in descending by default", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toHaveLength(11);
+        reviews.forEach((review) => {
+          expect(review).toEqual(
+            expect.objectContaining({
+              owner: expect.any(String),
+              title: expect.any(String),
+              review_id: expect.any(Number),
+              category: "social deduction",
+              review_img_url: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              designer: expect.any(String),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+
+  test("200: 200: should return an empty array if category exists but has no reviews ", () => {
+    return request(app)
+      .get("/api/reviews?category=children's games")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toHaveLength(0);
+      });
+  });
+
+  test("200: allows client to filter by category and sort by a specific column and order, and returns a list of all reviews in that category, sorted by the column and order specified", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction&sort_by=title&order=desc")
+      .expect(200)
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("title", { descending: true });
+      });
+  });
+  test("200: allows client to sort reviews by any column and returns a list of all reviews sorted by that column", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=title")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("title", { descending: true });
+      });
+  });
+  test("200: allows client to sort reviews by any column and choose the order and returns a list of all reviews sorted by that column in the specific order", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("title");
+      });
+  });
+
+  test("400: bad request when invalid query term for sort", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=banana")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("400: bad request when invalid query term for order", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=title&order=desc;DROPTABLES")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("400: bad request when invalid query term for category", () => {
+    return request(app)
+      .get("/api/reviews?category=banana")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("bad request");
       });
   });
 });
@@ -246,6 +332,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
   });
 });
 
+
 describe("DELETE /api/comments/:comment_id", () => {
   test("204: no content when comment has been deleted", () => {
     return request(app)
@@ -258,17 +345,144 @@ describe("DELETE /api/comments/:comment_id", () => {
   test("404: not found when id not present in table", () => {
     return request(app)
       .delete("/api/comments/100")
+
+
+describe("GET /api/users", () => {
+  test("200: should return an array of user objects with the correct properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+});
+
+
+describe("PATCH /api/reviews/:review_id", () => {
+  test("200: should increment selected review's votes by the given number and return the updated review", () => {
+    const newVote = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(newVote)
+      .expect(200)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual({
+          review_id: 1,
+          title: "Agricola",
+          review_body: "Farmyard fun!",
+          designer: "Uwe Rosenberg",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          votes: 2,
+          category: "euro game",
+          owner: "mallionaire",
+          created_at: "2021-01-18T10:00:20.514Z",
+        });
+      });
+  });
+  test("200: should decrement selected review's votes by the given number and return the updated review", () => {
+    const newVote = { inc_votes: -1 };
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(newVote)
+      .expect(200)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual({
+          review_id: 1,
+          title: "Agricola",
+          review_body: "Farmyard fun!",
+          designer: "Uwe Rosenberg",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          votes: 0,
+          category: "euro game",
+          owner: "mallionaire",
+          created_at: "2021-01-18T10:00:20.514Z",
+        });
+      });
+  });
+  test("200: selected review's votes should stay the same if no new votes added ", () => {
+    const newVote = { inc_votes: 0 };
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(newVote)
+      .expect(200)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual({
+          review_id: 1,
+          title: "Agricola",
+          review_body: "Farmyard fun!",
+          designer: "Uwe Rosenberg",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          votes: 1,
+          category: "euro game",
+          owner: "mallionaire",
+          created_at: "2021-01-18T10:00:20.514Z",
+        });
+      });
+  });
+  test("400: bad request, when incorrect property posted", () => {
+    const newVote = { votes: 1 };
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(newVote)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("404: not found when review_id does not exist", () => {
+    const newVote = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/reviews/1000")
+      .send(newVote)
+
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("not found");
       });
   });
+
   test("400: bad request when wrong data type is inputted for comment_id ", () => {
     return request(app)
       .delete("/api/comments/banana")
+
+  test("400: bad request when wrong data type inputed in the params ", () => {
+    const newVote = { inc_votes: "banana" };
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(newVote)
+
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("bad request");
       });
   });
 });
+
+
+describe('GET/api', () => {
+  test('200: should return a JSON describing all the available endpoints on the api', () => {
+    return request(app)
+    .get('/api')
+    .expect(200)
+    .then(({body})=> {
+      expect(body).toBe({})
+    })
+    
+  });
+});
+
+
+

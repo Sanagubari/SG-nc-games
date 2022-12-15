@@ -1,10 +1,18 @@
+const reviews = require("../db/data/test-data/reviews");
 const {
   selectAllCategories,
   selectAllReviews,
   selectSpecificReview,
   selectComments,
   insertComment,
+
   removeComment,
+
+
+
+  updateReviewVotes,
+
+
 } = require("../models/catogories.model");
 
 exports.getCategories = (req, res, next) => {
@@ -16,11 +24,15 @@ exports.getCategories = (req, res, next) => {
 };
 
 exports.getReviews = (req, res, next) => {
-  selectAllReviews()
-    .then((reviews) => {
-      res.send({ reviews });
-    })
-    .catch(next);
+  const { query } = req;
+  selectAllCategories()
+  .then((categories) => {
+    selectAllReviews(query, categories)
+      .then((reviews) => {
+        res.send({ reviews });
+      })
+      .catch(next);
+  });
 };
 
 exports.getReviewObject = (req, res, next) => {
@@ -51,6 +63,7 @@ exports.postComment = (req, res, next) => {
     .catch(next);
 };
 
+
 exports.deleteComment = (req, res, next) => {
   const { comment_id } = req.params;
   removeComment(comment_id)
@@ -59,3 +72,27 @@ exports.deleteComment = (req, res, next) => {
     })
     .catch(next);
 };
+
+
+exports.getUsers = (req, res, next) => {
+  selectAllUsers()
+  .then((users) => {
+    res.send({users})
+  })
+  .catch(next);
+}
+
+exports.patchReviewVotes = (req, res, next) => {
+  const { review_id } = req.params;
+  const { body } = req;
+  Promise.all([
+    updateReviewVotes(review_id, body),
+    selectSpecificReview(review_id),
+  ])
+    .then(([review]) => {
+      res.send({ review });
+    })
+    .catch(next);
+};
+
+

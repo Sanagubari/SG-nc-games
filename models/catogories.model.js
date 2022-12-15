@@ -9,20 +9,60 @@ exports.selectAllCategories = () => {
     });
 };
 
-exports.selectAllReviews = () => {
-  return db
-    .query(
-      `SELECT  title, designer, owner, review_img_url, category, reviews.votes, reviews.review_id, reviews.created_at,
-    COUNT(comment_id)::int AS comment_count
-    FROM reviews
-    LEFT JOIN comments
-    ON reviews.review_id = comments.review_id
-    GROUP BY reviews.review_id
-    ORDER BY reviews.created_at DESC;`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+exports.selectAllReviews = (query, categories) => {
+  const { category, sort_by, order } = query;
+
+  const sort = sort_by || "created_at";
+  const sortOrder = order || "DESC";
+  let queryValues = [];
+
+  const validSortQueries = [
+    "owner",
+    "title",
+    "review_id",
+    "category",
+    "created_at",
+    "votes",
+    "designer",
+    "review_img_url",
+  ];
+  const validOrderQueries = ["asc", "desc"];
+  const validCategoryQueries = categories.map((category) => {
+    return category.slug;
+  });
+
+  if (!validSortQueries.includes(sort)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+
+  if (!validOrderQueries.includes(sortOrder.toLowerCase())) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+
+  let queryString = `SELECT  title, designer, owner, review_img_url, category, reviews.votes, reviews.review_id, reviews.created_at,
+  COUNT(comment_id)::int AS comment_count
+  FROM reviews
+  LEFT JOIN comments
+  ON reviews.review_id = comments.review_id
+  `;
+
+  if (category !== undefined && validCategoryQueries.includes(category)) {
+    queryString += `WHERE category = $1 `;
+    queryValues.push(category);
+  } else if (
+    category !== undefined &&
+    !validCategoryQueries.includes(category)
+  ) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+
+  queryString += `
+  GROUP BY reviews.review_id
+  ORDER BY reviews.${sort} ${sortOrder}`;
+
+  return db.query(queryString, queryValues).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.selectSpecificReview = (reviewID) => {
@@ -65,6 +105,7 @@ exports.insertComment = (commentToBeAdded, reviewID) => {
     });
 };
 
+
 exports.removeComment = (commentID) => {
   return db
     .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *`, [
@@ -77,3 +118,25 @@ exports.removeComment = (commentID) => {
       return rows;
     });
 };
+
+
+exports.selectAllUsers = () => {
+  return db.query(`SELECT * FROM users`)
+  .then(({rows}) => {
+    return rows;
+  })
+}
+
+exports.updateReviewVotes = (reviewID, newVote) => {
+  const { inc_votes } = newVote;
+  return db
+    .query(
+      `UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING *`,
+      [inc_votes, reviewID]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
+
+
