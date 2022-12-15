@@ -1,3 +1,4 @@
+const reviews = require("../db/data/test-data/reviews");
 const {
   selectAllCategories,
   selectAllReviews,
@@ -19,11 +20,15 @@ exports.getCategories = (req, res, next) => {
 };
 
 exports.getReviews = (req, res, next) => {
-  selectAllReviews()
-    .then((reviews) => {
-      res.send({ reviews });
-    })
-    .catch(next);
+  const { query } = req;
+  selectAllCategories()
+  .then((categories) => {
+    selectAllReviews(query, categories)
+      .then((reviews) => {
+        res.send({ reviews });
+      })
+      .catch(next);
+  });
 };
 
 exports.getReviewObject = (req, res, next) => {
