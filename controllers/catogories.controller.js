@@ -6,8 +6,12 @@ const {
   selectComments,
   insertComment,
 
+  removeComment,
+
+
 
   updateReviewVotes,
+
 
 } = require("../models/catogories.model");
 
@@ -60,6 +64,16 @@ exports.postComment = (req, res, next) => {
 };
 
 
+exports.deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  removeComment(comment_id)
+    .then(() => {
+      res.status(204).send("no content");
+    })
+    .catch(next);
+};
+
+
 exports.getUsers = (req, res, next) => {
   selectAllUsers()
   .then((users) => {
@@ -80,4 +94,5 @@ exports.patchReviewVotes = (req, res, next) => {
     })
     .catch(next);
 };
+
 

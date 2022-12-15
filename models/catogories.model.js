@@ -106,6 +106,20 @@ exports.insertComment = (commentToBeAdded, reviewID) => {
 };
 
 
+exports.removeComment = (commentID) => {
+  return db
+    .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *`, [
+      commentID,
+    ])
+    .then(({ rows }) => {
+      if( rows.length === 0 ){
+        return Promise.reject({ status: 404, msg: "not found" })
+      }
+      return rows;
+    });
+};
+
+
 exports.selectAllUsers = () => {
   return db.query(`SELECT * FROM users`)
   .then(({rows}) => {
@@ -124,4 +138,5 @@ exports.updateReviewVotes = (reviewID, newVote) => {
       return rows[0];
     });
 };
+
 
