@@ -512,16 +512,18 @@ describe("GET/api", () => {
           description:
             "serves up a json representation of all the available endpoints of the api",
         });
-        expect(Object.keys(endpoints)).toEqual([
-          "GET /api",
-          "GET /api/categories",
-          "GET /api/reviews",
-          "GET /api/reviews/:review_id",
-          "GET /api/reviews/:review_id/comments",
-          "POST /api/reviews/:review_id/comments",
-          "DELETE /api/comments/:comment_id",
-          "PATCH /api/reviews/:review_id",
-        ]);
+        expect(Object.keys(endpoints)).toEqual(
+          expect.arrayContaining([
+            "GET /api",
+            "GET /api/categories",
+            "GET /api/reviews",
+            "GET /api/reviews/:review_id",
+            "GET /api/reviews/:review_id/comments",
+            "POST /api/reviews/:review_id/comments",
+            "DELETE /api/comments/:comment_id",
+            "PATCH /api/reviews/:review_id",
+          ])
+        );
       });
   });
 });
