@@ -383,7 +383,6 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
-
 describe("PATCH /api/reviews/:review_id", () => {
   test("200: should increment selected review's votes by the given number and return the updated review", () => {
     const newVote = { inc_votes: 1 };
