@@ -483,4 +483,28 @@ describe("PATCH /api/reviews/:review_id", () => {
   });
 });
 
-
+describe("GET/api", () => {
+  test("200: should return a JSON describing all the available endpoints on the api", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body: { endpoints } }) => {
+        expect(endpoints["GET /api"]).toEqual({
+          description:
+            "serves up a json representation of all the available endpoints of the api",
+        });
+        expect(Object.keys(endpoints)).toEqual(
+          expect.arrayContaining([
+            "GET /api",
+            "GET /api/categories",
+            "GET /api/reviews",
+            "GET /api/reviews/:review_id",
+            "GET /api/reviews/:review_id/comments",
+            "POST /api/reviews/:review_id/comments",
+            "DELETE /api/comments/:comment_id",
+            "PATCH /api/reviews/:review_id",
+          ])
+        );
+      });
+  });
+});

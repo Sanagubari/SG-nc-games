@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const fs = require("fs");
 
 exports.selectAllCategories = () => {
   return db
@@ -67,13 +68,16 @@ exports.selectAllReviews = (query, categories) => {
 
 exports.selectSpecificReview = (reviewID) => {
   return db
-    .query(`SELECT  title, designer, owner, review_img_url, category, review_body, reviews.votes, reviews.review_id, reviews.created_at, 
+    .query(
+      `SELECT  title, designer, owner, review_img_url, category, review_body, reviews.votes, reviews.review_id, reviews.created_at, 
     COUNT(comment_id)::int AS comment_count
     FROM reviews
     LEFT JOIN comments
     ON reviews.review_id = comments.review_id
     WHERE reviews.review_id = $1
-    GROUP BY reviews.review_id`, [reviewID])
+    GROUP BY reviews.review_id`,
+      [reviewID]
+    )
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "not found" });
@@ -111,27 +115,24 @@ exports.insertComment = (commentToBeAdded, reviewID) => {
     });
 };
 
-
 exports.removeComment = (commentID) => {
   return db
     .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *`, [
       commentID,
     ])
     .then(({ rows }) => {
-      if( rows.length === 0 ){
-        return Promise.reject({ status: 404, msg: "not found" })
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "not found" });
       }
       return rows;
     });
 };
 
-
 exports.selectAllUsers = () => {
-  return db.query(`SELECT * FROM users`)
-  .then(({rows}) => {
+  return db.query(`SELECT * FROM users`).then(({ rows }) => {
     return rows;
-  })
-}
+  });
+};
 
 exports.updateReviewVotes = (reviewID, newVote) => {
   const { inc_votes } = newVote;
@@ -145,4 +146,13 @@ exports.updateReviewVotes = (reviewID, newVote) => {
     });
 };
 
-
+exports.readAllEndpoints = () => {
+  
+fs.readFile('../endpoints.json', 'utf8', (err, data) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  console.log(data, '<<<<data');
+});
+}

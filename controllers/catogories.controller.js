@@ -9,12 +9,10 @@ const {
 
   removeComment,
 
-
-
   updateReviewVotes,
-
-
+  readAllEndpoints
 } = require("../models/catogories.model");
+const endpoints = require('../endpoints.json')
 
 exports.getCategories = (req, res, next) => {
   selectAllCategories()
@@ -26,8 +24,7 @@ exports.getCategories = (req, res, next) => {
 
 exports.getReviews = (req, res, next) => {
   const { query } = req;
-  selectAllCategories()
-  .then((categories) => {
+  selectAllCategories().then((categories) => {
     selectAllReviews(query, categories)
       .then((reviews) => {
         res.send({ reviews });
@@ -64,7 +61,6 @@ exports.postComment = (req, res, next) => {
     .catch(next);
 };
 
-
 exports.deleteComment = (req, res, next) => {
   const { comment_id } = req.params;
   removeComment(comment_id)
@@ -74,14 +70,13 @@ exports.deleteComment = (req, res, next) => {
     .catch(next);
 };
 
-
 exports.getUsers = (req, res, next) => {
   selectAllUsers()
-  .then((users) => {
-    res.send({users})
-  })
-  .catch(next);
-}
+    .then((users) => {
+      res.send({ users });
+    })
+    .catch(next);
+};
 
 exports.patchReviewVotes = (req, res, next) => {
   const { review_id } = req.params;
@@ -96,4 +91,6 @@ exports.patchReviewVotes = (req, res, next) => {
     .catch(next);
 };
 
-
+exports.getApi = (req, res, next) => {
+    res.send({ endpoints });
+};
