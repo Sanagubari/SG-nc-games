@@ -35,8 +35,7 @@ describe("/api/invalidPath", () => {
     return request(app)
       .get("/api/hajsdfbhjasdbfvja")
       .expect(404)
-      .then(({ body }) => {
-        const { msg } = body;
+      .then(({ body: { msg } }) => {
         expect(msg).toBe("not found");
       });
   });
@@ -47,8 +46,7 @@ describe("GET /api/reviews", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
-      .then(({ body }) => {
-        const { reviews } = body;
+      .then(({ body : {reviews}}) => {
         expect(reviews).toHaveLength(13);
         reviews.forEach((review) => {
           expect(review).toEqual(
@@ -140,7 +138,7 @@ describe("GET /api/reviews", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("bad request");
+        expect(msg).toBe("Bad Request: Cannot sort by 'banana'");
       });
   });
   test("400: bad request when invalid query term for order", () => {
@@ -149,7 +147,7 @@ describe("GET /api/reviews", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("bad request");
+        expect(msg).toBe("Bad request: Cannot order in 'desc;DROPTABLES'");
       });
   });
   test("400: bad request when invalid query term for category", () => {
@@ -158,7 +156,7 @@ describe("GET /api/reviews", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("bad request");
+        expect(msg).toBe("Bad Request: Category does not exist");
       });
   });
 });
@@ -212,7 +210,7 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/100")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("not found");
+        expect(msg).toBe("Not found: Review '100' does not exist");
       });
   });
   test("400: bad request when wrong data type is queried", () => {
@@ -269,7 +267,7 @@ describe("GET /api/reviews/:review_id/comments", () => {
       .get("/api/reviews/100/comments")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("not found");
+        expect(msg).toBe("Not found: Review '100' does not exist");
       });
   });
   test("400: bad request when wrong data type inputed in the params ", () => {
@@ -370,7 +368,7 @@ describe("DELETE /api/comments/:comment_id", () => {
       .delete("/api/comments/100")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("not found");
+        expect(msg).toBe("Not found: Comment '100' does not exist");
       });
   });
   test("400: bad request when wrong data type is inputted for comment_id ", () => {
@@ -465,7 +463,7 @@ describe("PATCH /api/reviews/:review_id", () => {
 
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("not found");
+        expect(msg).toBe("Not found: Review '1000' does not exist");
       });
   });
 
