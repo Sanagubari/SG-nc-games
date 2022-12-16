@@ -6,13 +6,10 @@ const {
   selectSpecificReview,
   selectComments,
   insertComment,
-
   removeComment,
-
   updateReviewVotes,
-  readAllEndpoints
 } = require("../models/catogories.model");
-const endpoints = require('../endpoints.json')
+const endpoints = require("../endpoints.json");
 
 exports.getCategories = (req, res, next) => {
   selectAllCategories()
@@ -92,5 +89,5 @@ exports.patchReviewVotes = (req, res, next) => {
 };
 
 exports.getApi = (req, res, next) => {
-    res.send({ endpoints });
+  res.send({ endpoints });
 };
