@@ -18,6 +18,7 @@ const {
 
   getUsers,
   patchReviewVotes,
+  getApi
 
 
 } = require("./controllers/catogories.controller");
@@ -36,7 +37,7 @@ app.delete("/api/comments/:comment_id", deleteComment)
 app.get("/api/users", getUsers);
 
 app.patch("/api/reviews/:review_id", patchReviewVotes);
-
+app.get('/api', getApi);
 
 app.all("*", handle404);
 
