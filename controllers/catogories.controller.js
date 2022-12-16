@@ -1,4 +1,3 @@
-const reviews = require("../db/data/test-data/reviews");
 const {
   selectAllCategories,
   selectAllReviews,
@@ -8,7 +7,7 @@ const {
   insertComment,
   removeComment,
   updateReviewVotes,
-  checkCategoryExists
+  checkCategoryExists,
 } = require("../models/catogories.model");
 const endpoints = require("../endpoints.json");
 
