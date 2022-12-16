@@ -8,6 +8,7 @@ const {
   insertComment,
   removeComment,
   updateReviewVotes,
+  checkCategoryExists
 } = require("../models/catogories.model");
 const endpoints = require("../endpoints.json");
 
@@ -20,14 +21,15 @@ exports.getCategories = (req, res, next) => {
 };
 
 exports.getReviews = (req, res, next) => {
-  const { query } = req;
-  selectAllCategories().then((categories) => {
-    selectAllReviews(query, categories)
-      .then((reviews) => {
-        res.send({ reviews });
-      })
-      .catch(next);
-  });
+  const { category, sort_by, order } = req.query;
+  Promise.all([
+    selectAllReviews(category, sort_by, order),
+    checkCategoryExists(category),
+  ])
+    .then(([reviews]) => {
+      res.send({ reviews });
+    })
+    .catch(next);
 };
 
 exports.getReviewObject = (req, res, next) => {

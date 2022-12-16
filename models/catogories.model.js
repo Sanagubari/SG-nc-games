@@ -10,9 +10,7 @@ exports.selectAllCategories = () => {
     });
 };
 
-exports.selectAllReviews = (query, categories) => {
-  const { category, sort_by, order } = query;
-
+exports.selectAllReviews = (category, sort_by, order) => {
   const sort = sort_by || "created_at";
   const sortOrder = order || "DESC";
   let queryValues = [];
@@ -28,16 +26,19 @@ exports.selectAllReviews = (query, categories) => {
     "review_img_url",
   ];
   const validOrderQueries = ["asc", "desc"];
-  const validCategoryQueries = categories.map((category) => {
-    return category.slug;
-  });
 
   if (!validSortQueries.includes(sort)) {
-    return Promise.reject({ status: 400, msg: "bad request" });
+    return Promise.reject({
+      status: 400,
+      msg: `Bad Request: Cannot sort by '${sort}'`,
+    });
   }
 
   if (!validOrderQueries.includes(sortOrder.toLowerCase())) {
-    return Promise.reject({ status: 400, msg: "bad request" });
+    return Promise.reject({
+      status: 400,
+      msg: `Bad request: Cannot order in '${sortOrder}'`,
+    });
   }
 
   let queryString = `SELECT  title, designer, owner, review_img_url, category, reviews.votes, reviews.review_id, reviews.created_at,
@@ -47,14 +48,9 @@ exports.selectAllReviews = (query, categories) => {
   ON reviews.review_id = comments.review_id
   `;
 
-  if (category !== undefined && validCategoryQueries.includes(category)) {
+  if (category !== undefined) {
     queryString += `WHERE category = $1 `;
     queryValues.push(category);
-  } else if (
-    category !== undefined &&
-    !validCategoryQueries.includes(category)
-  ) {
-    return Promise.reject({ status: 400, msg: "bad request" });
   }
 
   queryString += `
@@ -80,7 +76,10 @@ exports.selectSpecificReview = (reviewID) => {
     )
     .then(({ rows }) => {
       if (rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "not found" });
+        return Promise.reject({
+          status: 404,
+          msg: `Not found: Review '${reviewID}' does not exist`,
+        });
       }
       return rows[0];
     });
@@ -122,7 +121,10 @@ exports.removeComment = (commentID) => {
     ])
     .then(({ rows }) => {
       if (rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "not found" });
+        return Promise.reject({
+          status: 404,
+          msg: `Not found: Comment '${commentID}' does not exist`,
+        });
       }
       return rows;
     });
@@ -146,13 +148,20 @@ exports.updateReviewVotes = (reviewID, newVote) => {
     });
 };
 
-exports.readAllEndpoints = () => {
-  
-fs.readFile('../endpoints.json', 'utf8', (err, data) => {
-  if (err) {
-    console.error(err);
-    return;
+exports.checkCategoryExists = (category) => {
+  if (category !== undefined) {
+    return db
+      .query(`SELECT * FROM categories WHERE slug =$1`, [category])
+      .then(({ rows }) => {
+        if (rows.length === 0) {
+          return Promise.reject({
+            status: 400,
+            msg: "Bad Request: Category does not exist",
+          });
+        }
+        return rows[0];
+      });
+  } else {
+    return true;
   }
-  console.log(data, '<<<<data');
-});
-}
+};
