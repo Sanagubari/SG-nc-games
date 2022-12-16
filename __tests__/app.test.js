@@ -30,7 +30,7 @@ describe("GET /api/categories", () => {
   });
 });
 
-describe("/api/invalidPath", () => {
+describe("GET /api/invalidPath", () => {
   test("404: not found when querying a non-existent path", () => {
     return request(app)
       .get("/api/hajsdfbhjasdbfvja")
@@ -46,7 +46,7 @@ describe("GET /api/reviews", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
-      .then(({ body : {reviews}}) => {
+      .then(({ body: { reviews } }) => {
         expect(reviews).toHaveLength(13);
         reviews.forEach((review) => {
           expect(review).toEqual(
@@ -65,7 +65,7 @@ describe("GET /api/reviews", () => {
         });
       });
   });
-  test("200: return a list of all reviews sorted by date in descending by default", () => {
+  test("200: should return a list of all reviews sorted by date in descending by default", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
@@ -97,7 +97,7 @@ describe("GET /api/reviews", () => {
       });
   });
 
-  test("200: 200: should return an empty array if category exists but has no reviews ", () => {
+  test("200: should return an empty array if category exists but has no reviews ", () => {
     return request(app)
       .get("/api/reviews?category=children's games")
       .expect(200)
@@ -136,8 +136,7 @@ describe("GET /api/reviews", () => {
     return request(app)
       .get("/api/reviews?sort_by=banana")
       .expect(400)
-      .then(({ body }) => {
-        const { msg } = body;
+      .then(({ body: { msg } }) => {
         expect(msg).toBe("Bad Request: Cannot sort by 'banana'");
       });
   });
@@ -145,8 +144,7 @@ describe("GET /api/reviews", () => {
     return request(app)
       .get("/api/reviews?sort_by=title&order=desc;DROPTABLES")
       .expect(400)
-      .then(({ body }) => {
-        const { msg } = body;
+      .then(({ body: { msg } }) => {
         expect(msg).toBe("Bad request: Cannot order in 'desc;DROPTABLES'");
       });
   });
@@ -154,8 +152,7 @@ describe("GET /api/reviews", () => {
     return request(app)
       .get("/api/reviews?category=banana")
       .expect(400)
-      .then(({ body }) => {
-        const { msg } = body;
+      .then(({ body: { msg } }) => {
         expect(msg).toBe("Bad Request: Category does not exist");
       });
   });
