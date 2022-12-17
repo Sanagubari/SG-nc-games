@@ -127,4 +127,3 @@ exports.patchComment = (req, res, next) => {
     .catch(next);
 };
 
-//do tests for selecting specici commnets and selecting specfic category?
