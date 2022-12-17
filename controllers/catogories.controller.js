@@ -8,6 +8,7 @@ const {
   removeComment,
   updateReviewVotes,
   checkCategoryExists,
+  selectSpecificUser
 } = require("../models/catogories.model");
 const endpoints = require("../endpoints.json");
 
@@ -91,4 +92,13 @@ exports.patchReviewVotes = (req, res, next) => {
 
 exports.getApi = (req, res, next) => {
   res.send({ endpoints });
+};
+
+exports.getSpecificUser = (req, res, next) => {
+  const { username } = req.params;
+  selectSpecificUser(username)
+    .then((user) => {
+      res.send({ user });
+    })
+    .catch(next);
 };

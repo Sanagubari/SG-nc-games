@@ -502,3 +502,31 @@ describe("GET/api", () => {
       });
   });
 });
+
+describe("GET /api/users/:username", () => {
+  test("200: should return a user object with the correct properties", () => {
+    return request(app)
+      .get("/api/users/mallionaire")
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user).toEqual(
+          expect.objectContaining({
+            username: "mallionaire",
+            name: "haz",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          })
+        );
+      });
+  });
+  test("404: not found when username does not exist", () => {
+    return request(app)
+      .get("/api/users/sana")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe(
+          "Not found: Username 'sana' does not exist"
+        );
+      });
+  });
+});
