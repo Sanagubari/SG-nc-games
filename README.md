@@ -31,7 +31,7 @@ Inorder to use the repository, please ensure that you follow the instructions be
 
 - **.env.development** and add the following code to it: `PGDATABASE=nc_games`
 
-4. Ensure that these files are git ignored by adding **.env.*** into the **.gitignore** file.
+4. Ensure that these files are git ignored by adding `.env.*` into the **.gitignore** file.
 
 5. Run `npm install` to install all the relevant packages.
 
