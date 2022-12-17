@@ -156,7 +156,7 @@ exports.checkCategoryExists = (category) => {
         if (rows.length === 0) {
           return Promise.reject({
             status: 400,
-            msg: "Bad Request: Category does not exist",
+            msg: `Bad Request: Category '${category}' does not exist`,
           });
         }
         return rows[0];
@@ -200,6 +200,19 @@ exports.updateCommentVotes = (commentID, newVote) => {
     .query(
       `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *`,
       [inc_votes, commentID]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
+
+exports.insertReview = (body) => {
+  const { owner, title, review_body, designer, category } = body;
+
+  return db
+    .query(
+      `INSERT INTO reviews (owner, title, review_body, designer, category) VALUES ($1, $2, $3, $4, $5) RETURNING * `,
+      [owner, title, review_body, designer, category]
     )
     .then(({ rows }) => {
       return rows[0];

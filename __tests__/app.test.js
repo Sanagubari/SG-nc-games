@@ -153,7 +153,7 @@ describe("GET /api/reviews", () => {
       .get("/api/reviews?category=banana")
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad Request: Category does not exist");
+        expect(msg).toBe("Bad Request: Category 'banana' does not exist");
       });
   });
 });
@@ -644,6 +644,85 @@ describe("PATCH /api/comments/:comment_id", () => {
     return request(app)
       .patch("/api/comments/1")
       .send(newVote)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+});
+
+describe("POST /api/reviews", () => {
+  test("201: should add a new review and return posted review", () => {
+    const newReviewToAdd = {
+      owner: "philippaclaire9",
+      title: "Hungry Hungry Hippos",
+      review_body: "Such a fun game to play",
+      designer: "Fred Kroll",
+      category: "children's games",
+    };
+    return request(app)
+      .post("/api/reviews")
+      .send(newReviewToAdd)
+      .expect(201)
+      .then(({ body: { newReview } }) => {
+        expect(newReview).toEqual(
+          expect.objectContaining({
+            comment_count: 0,
+            owner: "philippaclaire9",
+            title: "Hungry Hungry Hippos",
+            review_id: 14,
+            category: "children's games",
+            created_at: expect.any(String),
+            votes: 0,
+            designer: "Fred Kroll",
+            review_body: "Such a fun game to play",
+          })
+        );
+      });
+  });
+
+  test("404: not found, when owner is non existent", () => {
+    const newReviewToAdd = {
+      owner: "sanaGubari",
+      title: "Hungry Hungry Hippos",
+      review_body: "Such a fun game to play",
+      designer: "Fred Kroll",
+      category: "children's games",
+    };
+    return request(app)
+      .post("/api/reviews")
+      .send(newReviewToAdd)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+  test("404: Not found, when category is non existent", () => {
+    const newReviewToAdd = {
+      owner: "sanaGubari",
+      title: "Hungry Hungry Hippos",
+      review_body: "Such a fun game to play",
+      designer: "Fred Kroll",
+      category: "fun",
+    };
+    return request(app)
+      .post("/api/reviews")
+      .send(newReviewToAdd)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+  test("400: bad request, when not all required properties posted", () => {
+    const newReviewToAdd = {
+      owner: "sanaGubari",
+      review_body: "Such a fun game to play",
+      designer: "Fred Kroll",
+      category: "children's games",
+    };
+    return request(app)
+      .post("/api/reviews")
+      .send(newReviewToAdd)
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("bad request");

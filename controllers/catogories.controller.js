@@ -11,6 +11,7 @@ const {
   selectSpecificUser,
   selectSpecificComment,
   updateCommentVotes,
+  insertReview,
 } = require("../models/catogories.model");
 const endpoints = require("../endpoints.json");
 
@@ -127,3 +128,15 @@ exports.patchComment = (req, res, next) => {
     .catch(next);
 };
 
+exports.postReviews = (req, res, next) => {
+  const { body } = req;
+  
+  Promise.all([insertReview(body),checkCategoryExists(body.category), selectSpecificUser(body.owner) ])
+    .then(([reviewID]) => {
+      return selectSpecificReview(reviewID.review_id);
+    })
+    .then((newReview) => {
+      res.status(201).send({ newReview });
+    })
+    .catch(next);
+};
