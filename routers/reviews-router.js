@@ -5,11 +5,13 @@ const {
   getComments,
   postComment,
   patchReviewVotes,
+  postReviews
 } = require("../controllers/catogories.controller");
 
 reviewsRouter
 .route("/")
-.get(getReviews);
+.get(getReviews)
+.post(postReviews)
 
 reviewsRouter
 .route("/:review_id")
