@@ -27,9 +27,9 @@ Inorder to use the repository, please ensure that you follow the instructions be
 
 2. Connect to the **two local databases** by creating the following files:
 
-- **.env.test** and add the following code to it: `PGDATABASE=nc_games_test`
+- **.env.test** and add the following code to it: \ `PGDATABASE=nc_games_test`
 
-- **.env.development** and add the following code to it: `PGDATABASE=nc_games`
+- **.env.development** and add the following code to it: \ `PGDATABASE=nc_games`
 
 4. Ensure that these files are git ignored by adding `.env.*` into the **.gitignore** file.
 
