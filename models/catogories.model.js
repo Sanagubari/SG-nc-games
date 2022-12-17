@@ -179,3 +179,29 @@ exports.selectSpecificUser = (username) => {
       return rows[0];
     });
 };
+
+exports.selectSpecificComment = (commentID) => {
+  return db
+    .query(`SELECT * FROM comments WHERE comment_id =$1`, [commentID])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: `Not found: Comment '${commentID}' does not exist`,
+        });
+      }
+      return rows[0];
+    });
+};
+
+exports.updateCommentVotes = (commentID, newVote) => {
+  const { inc_votes } = newVote;
+  return db
+    .query(
+      `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *`,
+      [inc_votes, commentID]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};

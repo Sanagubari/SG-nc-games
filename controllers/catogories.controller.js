@@ -8,7 +8,9 @@ const {
   removeComment,
   updateReviewVotes,
   checkCategoryExists,
-  selectSpecificUser
+  selectSpecificUser,
+  selectSpecificComment,
+  updateCommentVotes,
 } = require("../models/catogories.model");
 const endpoints = require("../endpoints.json");
 
@@ -102,3 +104,26 @@ exports.getSpecificUser = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.getSpecificComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  selectSpecificComment(comment_id)
+    .then((comment) => {
+      res.send({ comment });
+    })
+    .catch(next);
+};
+
+exports.patchComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  const { body } = req;
+  Promise.all([
+    updateCommentVotes(comment_id, body),
+    selectSpecificComment(comment_id),
+  ])
+    .then(([comment]) => {
+      res.send({ comment });
+    })
+    .catch(next);
+};
+

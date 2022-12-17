@@ -524,9 +524,129 @@ describe("GET /api/users/:username", () => {
       .get("/api/users/sana")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe(
-          "Not found: Username 'sana' does not exist"
+        expect(msg).toBe("Not found: Username 'sana' does not exist");
+      });
+  });
+});
+
+describe("GET /api/comments/:comment_id", () => {
+  test("200: should return a specific comment object with the right properties ", () => {
+    return request(app)
+      .get("/api/comments/1")
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id: 1,
+            body: "I loved this game too!",
+            votes: 16,
+            author: "bainesface",
+            review_id: 2,
+            created_at: "2017-11-22T12:43:33.389Z",
+          })
         );
+      });
+  });
+
+  test("404: not found when comment_id does not exist", () => {
+    return request(app)
+      .get("/api/comments/100")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not found: Comment '100' does not exist");
+      });
+  });
+  test("400: bad request when wrong data type is queried", () => {
+    return request(app)
+      .get("/api/comments/banana")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: should increment selected comment's votes by the given number and return the updated comment", () => {
+    const newVote = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(newVote)
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toEqual({
+          comment_id: 1,
+          body: "I loved this game too!",
+          votes: 17,
+          author: "bainesface",
+          review_id: 2,
+          created_at: "2017-11-22T12:43:33.389Z",
+        });
+      });
+  });
+  test("200: should decrement selected review's votes by the given number and return the updated review", () => {
+    const newVote = { inc_votes: -1 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(newVote)
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toEqual({
+          comment_id: 1,
+          body: "I loved this game too!",
+          votes: 15,
+          author: "bainesface",
+          review_id: 2,
+          created_at: "2017-11-22T12:43:33.389Z",
+        });
+      });
+  });
+  test("200: selected comments votes should stay the same if no new votes added ", () => {
+    const newVote = { inc_votes: 0 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(newVote)
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toEqual({
+          comment_id: 1,
+          body: "I loved this game too!",
+          votes: 16,
+          author: "bainesface",
+          review_id: 2,
+          created_at: "2017-11-22T12:43:33.389Z",
+        });
+      });
+  });
+  test("400: bad request, when incorrect property posted", () => {
+    const newVote = { votes: 1 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(newVote)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("404: not found when comment_id does not exist", () => {
+    const newVote = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/1000")
+      .send(newVote)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not found: Comment '1000' does not exist");
+      });
+  });
+
+  test("400: bad request when wrong data type inputed in the params ", () => {
+    const newVote = { inc_votes: "banana" };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(newVote)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
       });
   });
 });
