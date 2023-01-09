@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const apiRouter = require("./routers/api-router");
+const cors = require('cors');
+
 const {
   handle404,
   handle500,
@@ -8,6 +10,7 @@ const {
   handlePSQLErrors,
 } = require("./controllers/errors.controller");
 
+app.use(cors());
 app.use(express.json());
 app.use("/api", apiRouter);
 app.all("*", handle404);
