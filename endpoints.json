@@ -35,6 +35,7 @@
   "GET /api/reviews/:review_id": {
     "description": "serves an object of the review",
     "parameters": "review_id must be a number",
+    "queries": ["comment_count"],
     "exampleResponse": {
       "review": {
         "review_id": 1,
@@ -112,6 +113,72 @@
         "category": "euro game",
         "owner": "mallionaire",
         "created_at": "2021-01-18T10:00:20.514Z"
+      }
+    }
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "tickle122",
+          "name": "Tom Tickle",
+          "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953"
+        }
+      ]
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "serves an object of the user",
+    "exampleResponse": {
+      "user": {
+        "username": "tickle122",
+        "name": "Tom Tickle",
+        "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953"
+      }
+    }
+  },
+
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates selected comments votes by the given number and responds with the updated review",
+    "parameters": "comment_id must be a number",
+    "patchBody": "should include the all the required properties",
+    "examplePostBody": {
+      "inc_votes": 1
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 1,
+        "votes": 17,
+        "created_at": 1511354613389,
+        "author": "bainesface",
+        "body": "I loved this game too!",
+        "review_id": 2
+      }
+    }
+  },
+  "POST /api/reviews": {
+    "description": "adds a new review and respinds with the newly created review with added properties",
+    "postBody": "should include the all the required properties",
+    "examplePostBody": {
+      "owner": "mallionaire",
+      "title": "One Night Ultimate Werewolf",
+      "review_body": "I loved this game",
+      "designer": "Akihisa Okui",
+      "category": "euro game"
+    },
+    "exampleResponse": {
+      "review": {
+        "review_id": 19,
+        "votes": 0,
+        "created_at": "2021-01-18T10:00:20.514Z",
+        "comment_count": 0,
+        "owner": "mallionaire",
+        "title": "One Night Ultimate Werewolf",
+        "review_body": "I loved this game",
+        "designer": "Akihisa Okui",
+        "category": "euro game"
       }
     }
   }
