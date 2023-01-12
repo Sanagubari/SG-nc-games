@@ -24,6 +24,7 @@ exports.selectAllReviews = (category, sort_by, order) => {
     "votes",
     "designer",
     "review_img_url",
+    'comment_count'
   ];
   const validOrderQueries = ["asc", "desc"];
 
@@ -55,7 +56,7 @@ exports.selectAllReviews = (category, sort_by, order) => {
 
   queryString += `
   GROUP BY reviews.review_id
-  ORDER BY reviews.${sort} ${sortOrder}`;
+  ORDER BY ${sort} ${sortOrder}`;
 
   return db.query(queryString, queryValues).then(({ rows }) => {
     return rows;

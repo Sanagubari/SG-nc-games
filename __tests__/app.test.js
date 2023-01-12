@@ -699,7 +699,7 @@ describe("POST /api/reviews", () => {
   });
   test("404: Not found, when category is non existent", () => {
     const newReviewToAdd = {
-      owner: "sanaGubari",
+      owner: "philippaclaire9",
       title: "Hungry Hungry Hippos",
       review_body: "Such a fun game to play",
       designer: "Fred Kroll",

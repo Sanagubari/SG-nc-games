@@ -25,6 +25,7 @@ exports.getCategories = (req, res, next) => {
 
 exports.getReviews = (req, res, next) => {
   const { category, sort_by, order } = req.query;
+
   Promise.all([
     selectAllReviews(category, sort_by, order),
     checkCategoryExists(category),
