@@ -26,19 +26,19 @@ exports.selectAllReviews = (category, sortBy, orderBy) => {
     "review_img_url",
     "comment_count",
   ];
-  const validOrderQueries = ["ASC", "DESC"];
+  const validOrderQueries = ["asc", "desc"];
 
-  if (!validSortQueries.includes(sort)) {
+  if (!validSortQueries.includes(sort_by)) {
     return Promise.reject({
       status: 400,
-      msg: `Bad Request: Cannot sort by '${sort}'`,
+      msg: `Bad Request: Cannot sort by '${sort_by}'`,
     });
   }
 
-  if (!validOrderQueries.includes(sortOrder.toUpperCase())) {
+  if (!validOrderQueries.includes(order.toLowerCase())) {
     return Promise.reject({
       status: 400,
-      msg: `Bad request: Cannot order in '${sortOrder}'`,
+      msg: `Bad request: Cannot order in '${order}'`,
     });
   }
 
@@ -47,14 +47,16 @@ exports.selectAllReviews = (category, sortBy, orderBy) => {
   FROM reviews
   LEFT JOIN comments
   ON reviews.review_id = comments.review_id
-  GROUP BY reviews.review_id
-  ORDER BY ${sort_by}, ${order}
   `;
 
   if (category !== undefined) {
     queryString += `WHERE category = $1 `;
     queryValues.push(category);
   }
+
+  queryString += `
+  GROUP BY reviews.review_id
+  ORDER BY ${sort_by} ${order}`;
 
   return db.query(queryString, queryValues).then(({ rows }) => {
     return rows;
