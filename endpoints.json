@@ -167,7 +167,7 @@
       "category": "euro game"
     },
     "exampleResponse": {
-      "review": {
+      "newReview": {
         "review_id": 19,
         "votes": 0,
         "created_at": "2021-01-18T10:00:20.514Z",
