@@ -12,7 +12,7 @@ exports.selectAllCategories = () => {
 
 exports.selectAllReviews = (category, sortBy, orderBy) => {
   const sort_by = sortBy || "created_at";
-  const order = order || "DESC";
+  const order = orderBy || "DESC";
   let queryValues = [];
 
   const validSortQueries = [
