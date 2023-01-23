@@ -1,5 +1,5 @@
 const apiRouter = require("express").Router();
-const {getApi} = require('../controllers/catogories.controller')
+const {getApi} = require('../controllers/api.controller')
 const reviewsRouter = require("./reviews-router");
 const categoriesRouter = require("./categories-router");
 const commentRouter = require("./comment-router");
