@@ -10,9 +10,9 @@ exports.selectAllCategories = () => {
     });
 };
 
-exports.selectAllReviews = (category, sort_by, order) => {
-  const sort = sort_by || "created_at";
-  const sortOrder = order || "DESC";
+exports.selectAllReviews = (category, sortBy, orderBy) => {
+  const sort_by = sortBy || "created_at";
+  const order = order || "DESC";
   let queryValues = [];
 
   const validSortQueries = [
@@ -24,9 +24,9 @@ exports.selectAllReviews = (category, sort_by, order) => {
     "votes",
     "designer",
     "review_img_url",
-    'comment_count'
+    "comment_count",
   ];
-  const validOrderQueries = ["asc", "desc"];
+  const validOrderQueries = ["ASC", "DESC"];
 
   if (!validSortQueries.includes(sort)) {
     return Promise.reject({
@@ -35,7 +35,7 @@ exports.selectAllReviews = (category, sort_by, order) => {
     });
   }
 
-  if (!validOrderQueries.includes(sortOrder.toLowerCase())) {
+  if (!validOrderQueries.includes(sortOrder.toUpperCase())) {
     return Promise.reject({
       status: 400,
       msg: `Bad request: Cannot order in '${sortOrder}'`,
@@ -47,16 +47,14 @@ exports.selectAllReviews = (category, sort_by, order) => {
   FROM reviews
   LEFT JOIN comments
   ON reviews.review_id = comments.review_id
+  GROUP BY reviews.review_id
+  ORDER BY ${sort_by}, ${order}
   `;
 
   if (category !== undefined) {
     queryString += `WHERE category = $1 `;
     queryValues.push(category);
   }
-
-  queryString += `
-  GROUP BY reviews.review_id
-  ORDER BY ${sort} ${sortOrder}`;
 
   return db.query(queryString, queryValues).then(({ rows }) => {
     return rows;
